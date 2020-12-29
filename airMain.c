@@ -54,16 +54,16 @@ void drawPage(int page){
 	
 	SSD1331_string(0, 0, hour, 12,1, BLUE);
 	SSD1331_string(12, 0, " : ", 12, 1, RED);
-	SSD1331_string(22, 0, minutes,12, 1, GREEN);
+	SSD1331_string(22, 0, minutes,12, 1, BLUE);
 
-  //color coding values//
-  int colors[3] = {BLUE, BLUE, BLUE};
-  if ((pms[0] >= PM1_LOW) &&  (pms[0] < PM1_HIGH)) colors[0] = YELLOW;
-  else if(pms[0] >= PM1_HIGH) colors[0] = RED;
-  if ((pms[1] >= PM25_LOW) &&  (pms[1] < PM25_HIGH)) colors[1] = YELLOW;
-  else if(pms[1] >= PM25_HIGH) colors[1] = RED;
-  if ((pms[2] >= PM10_LOW) &&  (pms[2] < PM10_HIGH)) colors[2] = YELLOW;
-  else if(pms[2] >= PM10_HIGH) colors[2] = RED;
+  	//color coding values//
+ 	int colors[3] = {GREEN, GREEN, GREEN};
+	if ((pms[0] >= PM1_LOW) &&  (pms[0] < PM1_HIGH)) colors[0] = YELLOW;
+	else if(pms[0] >= PM1_HIGH) colors[0] = RED;
+	if ((pms[1] >= PM25_LOW) &&  (pms[1] < PM25_HIGH)) colors[1] = YELLOW;
+	else if(pms[1] >= PM25_HIGH) colors[1] = RED;
+	if ((pms[2] >= PM10_LOW) &&  (pms[2] < PM10_HIGH)) colors[2] = YELLOW;
+	else if(pms[2] >= PM10_HIGH) colors[2] = RED;
 
 	switch(page){
 	
@@ -71,16 +71,16 @@ void drawPage(int page){
 
 			SSD1331_char1616(0, 13, value[pms[0] / 10], colors[0]);
 			SSD1331_char1616(16, 13, value[pms[0] % 10 ], colors[0]);
-			SSD1331_string(40, 13, "Pm 1.0", 12, 1, WHITE); 
+			SSD1331_string(40, 13, "PM 1.0", 12, 1, WHITE); 
 			//printf("pm 1.0 %d \n", pms[0]);
 
 			SSD1331_char1616(0, 31, value[pms[1] / 10], colors[1]);
 			SSD1331_char1616(16, 31, value[pms[1] % 10 ], colors[1]);
-			SSD1331_string(40, 31, "Pm 2.5", 12, 1, WHITE); 
+			SSD1331_string(40, 31, "PM 2.5", 12, 1, WHITE); 
 			
 			SSD1331_char1616(0, 49, value[pms[2] / 10], colors[2]);
 			SSD1331_char1616(16, 49, value[pms[2] % 10 ], colors[2]);
-			SSD1331_string(40, 49, "Pm 10", 12, 1, WHITE); 
+			SSD1331_string(40, 49, "PM 10", 12, 1, WHITE); 
 		
 			//printf("pm 2.5 %d \n", pms[1]);
 			//printf("pm 10 %d \n", pms[2]);
@@ -88,16 +88,16 @@ void drawPage(int page){
 			break;
 		case 1:
 			//draw pm 2.5//
-			SSD1331_char3216(18, 18, value[pms[1] / 10], colors[1]);
-			SSD1331_char3216(42, 18, value[pms[1] % 10 ], colors[1]);
-			SSD1331_string(18, 49, "ug/m3 Pm 2.5", 12, 1, WHITE); 
+			SSD1331_char3216(18, 15, value[pms[1] / 10], colors[1]);
+			SSD1331_char3216(42, 15, value[pms[1] % 10 ], colors[1]);
+			SSD1331_string(18, 49, "ug/m3 PM 2.5", 12, 1, WHITE); 
 
 			break;
 		case 2:
 			//draw pm 10.0//
-			SSD1331_char3216(18, 18, value[pms[2] / 10], colors[2]);
-			SSD1331_char3216(42, 18, value[pms[2] % 10 ], colors[2]);
-			SSD1331_string(18, 49, "ug/m3 Pm 10", 12, 1, WHITE); 
+			SSD1331_char3216(18, 15, value[pms[2] / 10], colors[2]);
+			SSD1331_char3216(42, 15, value[pms[2] % 10 ], colors[2]);
+			SSD1331_string(18, 49, "ug/m3 PM 10", 12, 1, WHITE); 
 			break;
 		default:
 			break;
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 	return -1;
     }
     
-    if( wiringPiISR (BUTTON_PIN, INT_EDGE_FALLING, &btnInterrupt) < 0) {
+    if( wiringPiISR (BUTTON_PIN, INT_EDGE_RISING, &btnInterrupt) < 0) {
     	printf("unable to setup ISR for button");
 	return -1;
     }
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 	} else {
 	 return 1;
 	}
-	delay(1000);
+	//delay(1000);
     }
 
     return 0;
