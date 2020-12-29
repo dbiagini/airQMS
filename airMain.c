@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include "./ssd1331/ssd1331.h"
+#include "./pms5003/pms5003.h"
 
+#define ERROR_MAX 5
 #define BUTTON_PIN 3
 
 #define PM25_LOW 35
@@ -15,6 +17,8 @@
 
 #define PM10_LOW 50
 #define PM10_HIGH 110
+
+#define PMS_SIM 1
 
 char value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 int pms[3] = {0,0,0};
@@ -107,6 +111,16 @@ void drawPage(int page){
 
 int main(int argc, char **argv)
 {
+    //setup the sensor//
+    int status = pms_init();
+    if (status != UART_OK) {
+        output_uart_code(status);
+        return 1;
+    }
+
+    int err_cnt = 0;
+    PMS5003_DATA d;
+	
     if(wiringPiSetup() < 0)
     {
     	printf("Unable to setup Wiring PI\n");
@@ -123,7 +137,24 @@ int main(int argc, char **argv)
 
     while(1)
     {
-        int status = pmsSim(pms);
+        
+	//get sensor status//    
+	#ifdef PMS_SIM
+	int status = pmsSim(pms);
+	#endif
+	status = read_pms5003_data(&d);
+        if (status != UART_OK) {
+            output_uart_code(status);
+            err_cnt++;
+            if (err_cnt > ERROR_MAX) {
+                break;
+            }
+        }
+
+	pms[0]= d.pm1at;
+	pms[1]= d.pm2_5at;
+	pms[2]= d.pm10at;
+
         //SSD1331_string(0, 52, "MUSIC", 12, 0, WHITE); 
         //SSD1331_string(64, 52, "MENU", 12, 1, WHITE); 
 	if(status == 0){
@@ -138,6 +169,9 @@ int main(int argc, char **argv)
 	}
 	//delay(1000);
     }
+
+    SSD1331_clear();
+    pms_close();
 
     return 0;
 }
