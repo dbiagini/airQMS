@@ -18,7 +18,7 @@
 #define PM10_LOW 50
 #define PM10_HIGH 110
 
-#define PMS_SIM 1
+#define PMS_SIM 0
 
 char value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 int pms[3] = {0,0,0};
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 	} else {
 	 return 1;
 	}
-	//delay(1000);
+	delay(1000);
     }
 
     SSD1331_clear();
