@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          airQMS
+# Required-Start:    
+# Required-Stop:     
+# Should-Start: 
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Monitor air quality
+# Description:
+### END INIT INFO
+#/etc/init.d/airQMS
+export PATH=$PATH:/usr/local/bin
+
+case "$1" in
+ start)
+    exec sudo -u pi screen -d -m /home/pi/Projects/airQMS/airMain
+ ;;
+ stop)
+    SESSIONPID=$(exec sudo -u pi screen -list | grep Detached | awk -F "." '{print $1}')
+    exec sudo -u pi echo $SESSIONPID&
+    exec sudo -u pi echo "airQMS stopping!!!"&
+    exec sudo -u pi screen -S $SESSIONPID -X quit
+ ;;
+ *)
+  echo "Usage: /etc/init.d/airQMS {start|stop}"
+  exit 1
+;;
+esac
+exit 0
