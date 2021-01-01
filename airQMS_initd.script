@@ -16,17 +16,16 @@ export PATH=$PATH:/usr/local/bin
 
 case "$1" in
  start)
-    exec sudo -u pi screen -d -m /home/pi/Projects/airQMS/airMain
- ;;
+    /home/pi/Projects/airQMS/airMain &>/home/pi/Projects/airQMS/airMain.log
+    ;;
  stop)
-    SESSIONPID=$(exec sudo -u pi screen -list | grep Detached | awk -F "." '{print $1}')
-    exec sudo -u pi echo $SESSIONPID&
-    exec sudo -u pi echo "airQMS stopping!!!"&
-    exec sudo -u pi screen -S $SESSIONPID -X quit
- ;;
+    echo "airQMS stopping!!!"
+    pkill airMain
+    ;;
  *)
-  echo "Usage: /etc/init.d/airQMS {start|stop}"
-  exit 1
-;;
-esac
+    echo "Usage: /etc/init.d/airQMS {start|stop}"
+    exit 1
+    ;;
+esac 
+
 exit 0

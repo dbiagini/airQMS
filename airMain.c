@@ -123,15 +123,15 @@ int main(int argc, char **argv)
 	
     if(wiringPiSetup() < 0)
     {
-    	printf("Unable to setup Wiring PI\n");
+    	printf("airQMS: Unable to setup Wiring PI\n");
 	return -1;
     }
     
     if( wiringPiISR (BUTTON_PIN, INT_EDGE_RISING, &btnInterrupt) < 0) {
-    	printf("unable to setup ISR for button");
+    	printf("airQMS: unable to setup ISR for button");
 	return -1;
     }
-    printf("OLED run Press Ctrl + C to exit.\n");
+    printf("airQMS: OLED run Press Ctrl + C to exit.\n");
     SSD1331_begin();
     SSD1331_clear();
 
@@ -139,34 +139,38 @@ int main(int argc, char **argv)
     {
         
 	//get sensor status//    
-	#ifdef PMS_SIM
+	#if PMS_SIM
 	int status = pmsSim(pms);
+	printf("airQMS: Sensor simulation started. \n");
 	#endif
 	status = read_pms5003_data(&d);
         if (status != UART_OK) {
             output_uart_code(status);
             err_cnt++;
             if (err_cnt > ERROR_MAX) {
-                break;
-            }
-        }
+		printf("airQMS: uart %d errors, stopping!. \n", err_cnt);
+		break;
+            } else {
+		for (int i = 0; i < sizeof(pms); i++){
+			    pms[i] = 0;
+		    }
+	    }
+        } else {
 
-	pms[0]= d.pm1at;
-	pms[1]= d.pm2_5at;
-	pms[2]= d.pm10at;
-
+		pms[0]= d.pm1at;
+		pms[1]= d.pm2_5at;
+		pms[2]= d.pm10at;
+	
         //SSD1331_string(0, 52, "MUSIC", 12, 0, WHITE); 
         //SSD1331_string(64, 52, "MENU", 12, 1, WHITE); 
-	if(status == 0){
         	//printf("pm 2.5 %d \n", pms[1]);
 		//printf("pm 10 %d \n", pms[2]);
 		drawPage(numberOfPresses);
 		SSD1331_display();
 		//printf("%d\n", numberOfPresses);
 
-	} else {
-	 return 1;
 	}
+	
 	delay(1000);
     }
 
