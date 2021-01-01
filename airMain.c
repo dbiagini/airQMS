@@ -153,23 +153,23 @@ int main(int argc, char **argv)
             } else {
 		for (int i = 0; i < sizeof(pms); i++){
 			    pms[i] = 0;
-		    }
+		   }
 	    }
         } else {
 
+		err_cnt =0; //reset max retries
 		pms[0]= d.pm1at;
 		pms[1]= d.pm2_5at;
 		pms[2]= d.pm10at;
-	
+	}
         //SSD1331_string(0, 52, "MUSIC", 12, 0, WHITE); 
         //SSD1331_string(64, 52, "MENU", 12, 1, WHITE); 
         	//printf("pm 2.5 %d \n", pms[1]);
 		//printf("pm 10 %d \n", pms[2]);
-		drawPage(numberOfPresses);
-		SSD1331_display();
+	drawPage(numberOfPresses);
+	SSD1331_display();
 		//printf("%d\n", numberOfPresses);
 
-	}
 	
 	delay(1000);
     }
