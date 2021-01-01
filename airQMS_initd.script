@@ -2,8 +2,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:          airQMS
-# Required-Start:    
-# Required-Stop:     
+# Required-Start:   $local_fs $syslog $remote_fs $network $time 
+# Required-Stop:    $local_fs $syslog $remote_fs $network $time
 # Should-Start: 
 # Should-Stop:
 # Default-Start:     2 3 4 5
@@ -16,7 +16,7 @@ export PATH=$PATH:/usr/local/bin
 
 case "$1" in
  start)
-    /home/pi/Projects/airQMS/airMain &>/home/pi/Projects/airQMS/airMain.log
+    /home/pi/Projects/airQMS/airMain 2>&1 | tee -a /home/pi/Projects/airQMS/airMain.log
     ;;
  stop)
     echo "airQMS stopping!!!"
