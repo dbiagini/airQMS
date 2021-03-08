@@ -386,7 +386,9 @@ void output_uart_code(int error_code)
     }
     else
     {    
-      fprintf(stderr, "%s\n", err_msg);
+      time_t curtime;
+      time(&curtime);    
+      fprintf(stderr, "%s - %s\n", ctime(&curtime), err_msg);
     }
   }
 }

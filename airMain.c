@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "./ssd1331/ssd1331.h"
 #include "./pms5003/pms5003.h"
+#include "./dht11/dht.h"
 
 #define ERROR_MAX 5
 #define BUTTON_PIN 3
@@ -20,14 +22,17 @@
 
 #define PMS_SIM 0
 
+#define READ_TEMP 1
+
 char value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 int pms[3] = {0,0,0};
+int dht_data[5] = { 0, 0, 0, 0, 0};
 
 volatile int numberOfPresses = 0;
 
 void btnInterrupt(){
 	numberOfPresses++;
-	numberOfPresses %= 3;
+	numberOfPresses %= 4;
 }
 
 int pmsSim(int* values){
@@ -56,10 +61,17 @@ void drawPage(int page){
 	char hour[3] = {(char) value[timenow->tm_hour / 10], (char) value[(timenow->tm_hour % 10)], '\0'}; 
 	char minutes[3] = {(char) value[timenow->tm_min / 10], (char) value[(timenow->tm_min % 10)], '\0'};
 	
-	SSD1331_string(0, 0, hour, 12,1, BLUE);
-	SSD1331_string(12, 0, " : ", 12, 1, RED);
-	SSD1331_string(22, 0, minutes,12, 1, BLUE);
+	#ifdef READ_TEMP
+	////temp and humidity
+	char temperature[3] = {(char) value[dht_data[2]/10],(char) value[dht_data[2] % 10], '\0' };
+	char humidity[3] = {(char) value[dht_data[0]/10],(char) value[dht_data[0] % 10], '\0' };
+	#endif
 
+	SSD1331_string(0, 0, hour, 12,1, BLUE);
+	SSD1331_string(12, 0, ":", 12, 1, RED);
+	SSD1331_string(16, 0, minutes,12, 1, BLUE);
+
+	
   	//color coding values//
  	int colors[3] = {GREEN, GREEN, GREEN};
 	if ((pms[0] >= PM1_LOW) &&  (pms[0] < PM1_HIGH)) colors[0] = YELLOW;
@@ -72,6 +84,15 @@ void drawPage(int page){
 	switch(page){
 	
 		case 0:
+			//print temp humidity//
+			
+			#ifdef READ_TEMP
+			////temp and humidity
+			SSD1331_string(32, 0, temperature, 12,1, YELLOW);
+			SSD1331_string(44, 0, "C", 12, 1, YELLOW);
+			SSD1331_string(56, 0, humidity, 12,1, WHITE);
+			SSD1331_string(68, 0, "%", 12, 1, WHITE);
+			#endif
 
 			SSD1331_char1616(0, 13, value[pms[0] / 10], colors[0]);
 			SSD1331_char1616(16, 13, value[pms[0] % 10 ], colors[0]);
@@ -103,6 +124,26 @@ void drawPage(int page){
 			SSD1331_char3216(42, 15, value[pms[2] % 10 ], colors[2]);
 			SSD1331_string(18, 49, "ug/m3 PM 10", 12, 1, WHITE); 
 			break;
+		#ifdef READ_TEMP
+		case 3:
+			//print temperature and humidity
+			SSD1331_char1616(0, 18, value[dht_data[0] / 10], WHITE);
+			SSD1331_char1616(16, 18, value[dht_data[0] % 10 ], WHITE);
+			SSD1331_string(32, 18, " %", 16, 1, WHITE); 
+
+			SSD1331_char1616(0, 40, value[dht_data[2] / 10], WHITE);
+			SSD1331_char1616(16, 40, value[dht_data[2] % 10 ], WHITE);
+			SSD1331_string(32, 40, ".", 16, 1, WHITE); 
+			SSD1331_char1616(40, 40, value[dht_data[3] / 10 ], WHITE);
+			SSD1331_char1616(56, 40, value[dht_data[3] % 10 ], WHITE);			
+			SSD1331_string(72, 40, " C", 16, 1, WHITE); 
+
+
+			//SSD1331_char3216(18, 15, value[dht_data[2] / 10], colors[1]);
+			//SSD1331_char3216(42, 15, value[dht_data[1] % 10 ], colors[1]);
+			//SSD1331_string(18, 49, "ug/m3 PM 2.5", 12, 1, WHITE); 
+			
+		#endif
 		default:
 			break;
 	}
@@ -162,6 +203,18 @@ int main(int argc, char **argv)
 		pms[1]= d.pm2_5at;
 		pms[2]= d.pm10at;
 	}
+	
+	#ifdef READ_TEMP
+	int dht_temp[5] = {0, 0, 0, 0, 0};
+	if(read_dht11_dat(dht_temp)){
+	
+		//printf("cannot read DHT data");	
+
+	}else{
+	
+		memcpy(dht_data, dht_temp, sizeof(dht_data));
+	}
+	#endif
         //SSD1331_string(0, 52, "MUSIC", 12, 0, WHITE); 
         //SSD1331_string(64, 52, "MENU", 12, 1, WHITE); 
         	//printf("pm 2.5 %d \n", pms[1]);
