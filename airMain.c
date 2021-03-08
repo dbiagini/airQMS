@@ -94,18 +94,21 @@ void drawPage(int page){
 			SSD1331_string(68, 0, "%", 12, 1, WHITE);
 			#endif
 
-			SSD1331_char1616(0, 13, value[pms[0] / 10], colors[0]);
-			SSD1331_char1616(16, 13, value[pms[0] % 10 ], colors[0]);
-			SSD1331_string(40, 13, "PM 1.0", 12, 1, WHITE); 
+			SSD1331_char1616(0, 13, value[pms[0] / 100], colors[0]);
+			SSD1331_char1616(16, 13, value[(pms[0] % 100) / 10], colors[0]);
+			SSD1331_char1616(32, 13, value[pms[0] % 10 ], colors[0]);
+			SSD1331_string(50, 13, "PM 1.0", 12, 1, WHITE); 
 			//printf("pm 1.0 %d \n", pms[0]);
 
-			SSD1331_char1616(0, 31, value[pms[1] / 10], colors[1]);
-			SSD1331_char1616(16, 31, value[pms[1] % 10 ], colors[1]);
-			SSD1331_string(40, 31, "PM 2.5", 12, 1, WHITE); 
+			SSD1331_char1616(0, 31, value[pms[1] / 100], colors[1]);
+			SSD1331_char1616(16, 31, value[(pms[1] % 100) / 10], colors[1]);
+			SSD1331_char1616(32, 31, value[pms[1] % 10 ], colors[1]);
+			SSD1331_string(50, 31, "PM 2.5", 12, 1, WHITE); 
 			
-			SSD1331_char1616(0, 49, value[pms[2] / 10], colors[2]);
-			SSD1331_char1616(16, 49, value[pms[2] % 10 ], colors[2]);
-			SSD1331_string(40, 49, "PM 10", 12, 1, WHITE); 
+			SSD1331_char1616(0, 49, value[pms[2] / 100], colors[2]);
+			SSD1331_char1616(16, 49, value[(pms[2] % 100) / 10], colors[2]);
+			SSD1331_char1616(32, 49, value[pms[2] % 10 ], colors[2]);
+			SSD1331_string(50, 49, "PM 10", 12, 1, WHITE); 
 		
 			//printf("pm 2.5 %d \n", pms[1]);
 			//printf("pm 10 %d \n", pms[2]);
@@ -113,15 +116,17 @@ void drawPage(int page){
 			break;
 		case 1:
 			//draw pm 2.5//
-			SSD1331_char3216(18, 15, value[pms[1] / 10], colors[1]);
-			SSD1331_char3216(42, 15, value[pms[1] % 10 ], colors[1]);
+			SSD1331_char3216(0, 15, value[pms[1] / 100], colors[1]);
+			SSD1331_char3216(24, 15, value[(pms[1] % 100) / 10], colors[1]);
+			SSD1331_char3216(48, 15, value[pms[1] % 10 ], colors[1]);
 			SSD1331_string(18, 49, "ug/m3 PM 2.5", 12, 1, WHITE); 
 
 			break;
 		case 2:
 			//draw pm 10.0//
-			SSD1331_char3216(18, 15, value[pms[2] / 10], colors[2]);
-			SSD1331_char3216(42, 15, value[pms[2] % 10 ], colors[2]);
+			SSD1331_char3216(0, 15, value[pms[2] / 100], colors[2]);
+			SSD1331_char3216(24, 15, value[(pms[2] % 100) / 10], colors[2]);
+			SSD1331_char3216(48, 15, value[pms[2] % 10 ], colors[2]);
 			SSD1331_string(18, 49, "ug/m3 PM 10", 12, 1, WHITE); 
 			break;
 		#ifdef READ_TEMP
